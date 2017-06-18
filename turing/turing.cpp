@@ -9,30 +9,32 @@
 
 using namespace std;
 
-class Maquina{
+class Tape{
 private:
 typedef std::map<int, char> Cinta;
 Cinta cinta;
 int cle = 1;
-int limite = 1;
+int limit = 1;
+int limitL=0;
 public:
+Tape(){
+	cinta[0] = ' ';
+	cinta[1] = '@';
+	
+	}
 void print() {
-	for (int i = 0; i < cinta.size(); i++)
-	{
-		
-		if (cle == i) {
+	map<int,char>::iterator it;
+	for (it=cinta.begin(); it != cinta.end(); it++)
+	{	
+		if (cle == it->first) {
 			cout << '.';
 		}
-		cout << cinta[i];
+		cout << cinta[it->first];
 	}
 	cout << endl;
 }
 
-void tape() {
-	cinta[0] = ' ';
-	cinta[1] = '@';
-	
-}
+
 
 bool leng(char c) {
 	int caracter = c;
@@ -48,11 +50,22 @@ bool leng(char c) {
 
 
 void right(int n = 1) {
+	if(cinta[cle]== '\0'){
+		cinta[cle]=' ';
+		cinta[cle+1];
+		limit++;
+		}
 	cle += n;
 	print();
+	
 }
 
 void left(int n= 1) {
+	if(cinta[cle]== '\0'){
+		cinta[cle]=' ';
+		cinta[cle-1];
+		limitL--;
+		}
 	cle -= n;
 	print();
 }
@@ -64,29 +77,32 @@ void sigma(char s) {
 
 void left_to(char s) {
 	int j = cle;
-	while (cinta[j] != s && j >= 0) {
+	while (cinta[j] != s && j >= limitL) {
 		left();
 		j--;
 	}
+	cinta[j-1];
+	
 }
 
 void right_to(char s) {
 	int j = cle;
-	while (cinta[j] != s && j<=limite) {
+	while (cinta[j] != s && j<=limit) {
 		right();
 		j++;
 	}
 	cinta[j + 1];
+	
+	
 }
 
 
 void push(char val) {
 	if (leng(val)) {
-		cinta[limite + 1];
 		right_to(' ');
 		sigma(val);
 		left_to('@');
-		limite++;
+		limit++;
 	}
 	else {
 		
@@ -94,23 +110,30 @@ void push(char val) {
 }
 
 void pop() {
+	if(cinta.size()>2){
 	right_to(' ');
 	left();
 	char val = cinta[cle];
-	limite--;
+	limit--;
 	sigma(' ');
 	left_to('@');
 	left();
 	sigma(val);
-	sigma(' ');
 	right();
+}
 }
 
 void finish() {
-	int aux=limite;
+	int aux=limit;
+	if(cinta.size()>2){
 for(int i=1;i<aux;i++){
 	pop();
 	}
+	left();
+	sigma(' ');
+	right_to('@');
+	
+}
 }
 
 void read() {
@@ -126,11 +149,13 @@ void read() {
 			cin >> value;
 			print();
 			push(value);
+			
 			break;
 		}
 		case 'O': {
 			print();
 			pop();
+			
 			break;
 		}
 		case 'X': {
@@ -147,9 +172,8 @@ void read() {
 
 int main()
 {
-	Maquina mt;
-	mt.tape();
-	mt.read();
+	Tape t;
+	t.read();
 	system("PAUSE");
 	return 0;
 }
